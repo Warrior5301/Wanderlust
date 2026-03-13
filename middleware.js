@@ -3,9 +3,10 @@ const { listingSchema, reviewSchema } = require("./schema.js");
 const ExpressError = require("./utils/ExpressError.js");
 const Review = require("./models/review.js");
 
+// Middleware to check if user is logged in
 module.exports.isLoggedIn = (req, res, next)=>{
     if(!req.isAuthenticated()){
-        //redirectURL save  
+        // Save original URL to redirect after login
         req.session.redirectUrl = req.originalUrl;
         req.flash("error", "You must be logged in for that!");
         return res.redirect("/login");
@@ -13,6 +14,7 @@ module.exports.isLoggedIn = (req, res, next)=>{
     next();
 }
 
+// Middleware to save redirect URL from session to response locals
 module.exports.saveRedirectUrl = (req, res, next)=>{
     if(req.session.redirectUrl){
         res.locals.redirectUrl = req.session.redirectUrl;
@@ -20,10 +22,10 @@ module.exports.saveRedirectUrl = (req, res, next)=>{
     next();
 }
 
+// Middleware to check if current user is the listing owner
 module.exports.isOwner = async(req, res, next)=>{
     let { id } = req.params;
     let listing = await Listing.findById(id);
-    console.log(listing);
     if (!listing.owner.equals(req.user._id)) {
       req.flash("error", "You don't have permission to edit");
       return res.redirect(`/listings/${id}`);
@@ -31,6 +33,7 @@ module.exports.isOwner = async(req, res, next)=>{
     next();
 }
 
+// Middleware to validate listing data against Joi schema
 module.exports.validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
   if (error) {
@@ -41,6 +44,7 @@ module.exports.validateListing = (req, res, next) => {
   }
 };
 
+// Middleware to validate review data against Joi schema
 module.exports.validateReview = (req, res, next)=>{
     let {error} = reviewSchema.validate(req.body);
     if(error){
@@ -52,6 +56,7 @@ module.exports.validateReview = (req, res, next)=>{
     }
 };
 
+// Middleware to check if current user is the review author
 module.exports.isReviewAuthor = async(req, res, next)=>{
     let {id, reviewId } = req.params;
     let review = await Review.findById(reviewId);

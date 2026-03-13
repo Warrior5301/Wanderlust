@@ -1,7 +1,7 @@
+// Load environment variables from .env file if not in production
 if(process.env.NODE_ENV != "production"){
     require("dotenv").config();
 }
-console.log(process.env.SECRET);
 
 const express = require("express");
 const app = express();
@@ -21,11 +21,14 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("./models/user.js");
+
+// Connect to MongoDB database
 main().then(()=>{
-    console.log("Mongodb Connected");
+    // Connection successful - database ready
 })
 .catch((err)=>{
-    console.log(err);
+    // Log connection errors to console for debugging
+    console.error("Database connection error:", err);
 });
 
 async function main(){
@@ -47,8 +50,9 @@ const store = MongoStore.create({
     touchAfter: 24*3600,
 });
 
-store.on("error", ()=>{
-    console.log("ERROR in Mongo SEssion Store", err);
+// Handle session store errors
+store.on("error", (err)=>{
+    console.error("ERROR in Mongo Session Store:", err);
 })
 const sessionOptions = {
     store,
@@ -77,10 +81,11 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next)=>{
+    // Store flash messages in response locals for template access
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
+    // Store current logged-in user info in response locals
     res.locals.currUser = req.user || null;
-    console.log(res.locals.success);
     next();
 });
 
@@ -93,7 +98,6 @@ app.use((req, res, next)=>{
 //     let registeredUser = await User.register(fakeUser, "helloworld");
 //     res.send(registeredUser);
 // });
-
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
@@ -108,6 +112,8 @@ app.use((err, req, res, next)=>{
     res.render("./listings/error.ejs", {err});
 });
 
+
+// Start Express server on port 8080
 app.listen(8080, ()=>{
-    console.log("Listening on 8080)");
+    console.log("Server listening on port 8080");
 });

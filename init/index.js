@@ -4,28 +4,28 @@ const Listing = require("../models/listing.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
+// Database seeding function to initialize with sample data
 async function seedDB() {
   try {
+    // Connect to MongoDB
     await mongoose.connect(MONGO_URL);
-    console.log("Connected to DB");
 
+    // Delete existing listings
     await Listing.deleteMany({});
-    console.log("Old data deleted");
 
+    // Map sample data and add owner ID (admin user)
     const newData = initData.data.map((obj) => ({
       ...obj,
       owner: "69afd730668f05934076abc6",
     }));
 
+    // Insert new sample data
     const result = await Listing.insertMany(newData);
-    console.log("Inserted count:", result.length);
 
-    console.log("First item:", result[0]);
-
+    // Close database connection
     await mongoose.connection.close();
-    console.log("Connection closed");
   } catch (err) {
-    console.log("ERROR:", err);
+    console.error("ERROR during database seeding:", err);
   }
 }
 

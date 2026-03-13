@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+// Review schema for user reviews on listings
 const reviewSchema = new Schema({
     comment: String,
     rating:{
@@ -12,6 +13,7 @@ const reviewSchema = new Schema({
         type: Date,
         default: Date.now()
     },
+    // Reference to the user who wrote the review
     author:{
         type: Schema.Types.ObjectId,
         ref:"User"

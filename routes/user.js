@@ -5,15 +5,15 @@ const wrapAsync = require("../utils/wrapAsync");
 const passport = require("passport");
 const {saveRedirectUrl} = require("../middleware.js");
 const userController = require("../controllers/users.js");
-//SignUp get and post routes
+
+// Signup routes - GET form and POST registration
 router.route("/signup")
 .get(userController.renderSignupForm)
 .post(
   wrapAsync(userController.signup),
 );
 
-
-//LogIn get and post routes
+// Login routes - GET form and POST authentication
 router.route("/login")
 .get( userController.renderLoginForm)
 .post(
@@ -25,9 +25,12 @@ router.route("/login")
   userController.login
 );
 
+// Logout route
 router.get("/logout", userController.logout);
+
+// Root route - redirect to listings
 router.get("/", (req,res)=>{
   res.redirect("/listings");
 });
+
 module.exports = router;
-//MVC Framework

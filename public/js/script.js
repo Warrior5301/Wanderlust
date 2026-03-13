@@ -22,9 +22,9 @@
   });
 })();
 
+// Toggle tax information display when the tax switch is clicked
 let taxSwitch = document.getElementById("flexSwitchCheckDefault");
 taxSwitch.addEventListener("click", () => {
-  console.log("clicked");
   let taxInfo = document.getElementsByClassName("tax-info");
   for (info of taxInfo) {
     if (info.style.display != "inline") {
