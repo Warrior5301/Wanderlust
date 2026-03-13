@@ -26,5 +26,8 @@ router.route("/login")
 );
 
 router.get("/logout", userController.logout);
+router.get("/", (req,res)=>{
+  res.redirect("/listings");
+});
 module.exports = router;
 //MVC Framework
